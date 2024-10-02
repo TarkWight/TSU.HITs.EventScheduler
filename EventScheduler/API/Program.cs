@@ -11,14 +11,17 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//#### Add services to the container.
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
+builder.Services.AddScoped<IManagerService, ManagerService>();
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-
+//#
 
 //#### JWT
 var tokenConfigurations = new TokenConfigurations();
@@ -40,13 +43,13 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
     };
 });
-//# JWT
+//#
 
 //#### Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//# Swagger
+//#
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -60,7 +63,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//# Configure the HTTP request pipeline.
+//#
 
 using (var scope = app.Services.CreateScope())
 {
