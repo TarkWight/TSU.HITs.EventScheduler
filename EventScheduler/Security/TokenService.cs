@@ -29,7 +29,7 @@ namespace EventScheduler.Security
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("user_id", user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
@@ -98,7 +98,7 @@ namespace EventScheduler.Security
         {
             new Claim(JwtRegisteredClaimNames.Sub, manager.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, manager.Id.ToString()),
+            new Claim("user_id", manager.Id.ToString()),
             new Claim(ClaimTypes.Role, "Manager")
         };
 
