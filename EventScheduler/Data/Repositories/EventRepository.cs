@@ -6,13 +6,13 @@ namespace EventScheduler.Data.Repositories
 {
     public interface IEventRepository
     {
-        Task RegisterStudentToEventAsync(Guid eventId, Student student);
-        Task<List<Event>> GetEventsByCompanyAsync(Guid companyId);
-        Task<List<Event>> GetEventsByStudentAsync(Guid studentId);
+        Task RegisterStudentToEventAsync(StudentEventRegisterDTO eventRegisterDTO);
+        Task<List<EventEntity>> GetEventsByCompanyAsync(Guid companyId);
+        Task<List<EventEntity>> GetEventsByStudentAsync(Guid studentId);
         Task<List<Student>> GetStudentsByEventAsync(Guid eventId);
-        Task<Event> CreateEventAsync(Event newEvent);
+        Task<EventEntity> CreateEventAsync(EventEntity newEvent);
         Task<EventDTO> GetEventDtoAsync(Guid eventId);
-        Task<Event> GetEventByIdAsync(Guid eventId);
+        Task<EventEntity> GetEventByIdAsync(Guid eventId);
     }
 
     public class EventRepository : IEventRepository
@@ -24,23 +24,28 @@ namespace EventScheduler.Data.Repositories
             _context = context;
         }
 
-        public async Task RegisterStudentToEventAsync(Guid eventId, Student student)
+        public async Task RegisterStudentToEventAsync(StudentEventRegisterDTO eventRegisterDTO)
         {
             var eventEntity = await _context.Events.Include(e => e.RegisteredStudents)
-                                                    .FirstOrDefaultAsync(e => e.Id == eventId);
+                                                    .FirstOrDefaultAsync(e => e.Id == eventRegisterDTO.eventId);
             if (eventEntity != null && eventEntity.RegistrationDeadline > DateTime.Now)
             {
-                eventEntity.RegisteredStudents.Add(student);
-                await _context.SaveChangesAsync();
+                var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == eventRegisterDTO.studentId);
+                if (student != null)
+                {
+                    eventEntity.RegisteredStudents.Add(student);
+                    await _context.SaveChangesAsync();
+                }
+
             }
         }
 
-        public async Task<List<Event>> GetEventsByCompanyAsync(Guid companyId)
+        public async Task<List<EventEntity>> GetEventsByCompanyAsync(Guid companyId)
         {
             return await _context.Events.Where(e => e.CompanyId == companyId).ToListAsync();
         }
 
-        public async Task<List<Event>> GetEventsByStudentAsync(Guid studentId)
+        public async Task<List<EventEntity>> GetEventsByStudentAsync(Guid studentId)
         {
             return await _context.Events.Include(e => e.RegisteredStudents)
                                         .Where(e => e.RegisteredStudents.Any(s => s.Id == studentId))
@@ -54,7 +59,7 @@ namespace EventScheduler.Data.Repositories
             return eventEntity?.RegisteredStudents ?? new List<Student>();
         }
 
-        public async Task<Event> CreateEventAsync(Event newEvent)
+        public async Task<EventEntity> CreateEventAsync(EventEntity newEvent)
         {
             _context.Events.Add(newEvent);
             await _context.SaveChangesAsync();
@@ -69,7 +74,7 @@ namespace EventScheduler.Data.Repositories
 
             if (eventEntity == null)
             {
-                throw new KeyNotFoundException("Event not found.");
+                throw new KeyNotFoundException("EventEntity not found.");
             }
 
             return new EventDTO
@@ -86,7 +91,7 @@ namespace EventScheduler.Data.Repositories
         }
 
 
-        public async Task<Event> GetEventByIdAsync(Guid eventId)
+        public async Task<EventEntity> GetEventByIdAsync(Guid eventId)
         {
             return await _context.Events.FindAsync(eventId);
         }

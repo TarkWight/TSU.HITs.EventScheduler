@@ -1,7 +1,10 @@
-﻿using EventScheduler.Data.Repositories;
+﻿using Azure.Core;
+using EventScheduler.API.Google;
+using EventScheduler.Data.Repositories;
 using EventScheduler.Domain.Entities;
 using EventScheduler.Domain.Interfaces;
 using EventScheduler.Presenters.DTOs;
+using Google.Apis.Calendar.v3.Data;
 using System.ComponentModel.Design;
 
 namespace EventScheduler.Domain.Services
@@ -17,29 +20,30 @@ namespace EventScheduler.Domain.Services
             //_googleCalendarService = googleCalendarService;
         }
 
-        //public async Task RegisterStudentToEventAsync(Guid eventId, Student student)
-        //{
-        //    await _eventRepository.RegisterStudentToEventAsync(eventId, student);
+        public async Task RegisterStudentToEventAsync(StudentEventRegisterDTO eventRegisterDTO)
+        {
+            await _eventRepository.RegisterStudentToEventAsync(eventRegisterDTO);
 
-        //    var eventEntity = await _eventRepository.GetEventByIdAsync(eventId);
+            var eventEntity = await _eventRepository.GetEventByIdAsync(eventRegisterDTO.eventId);
 
-        //    var googleCalendarEvent = new GoogleCalendar
-        //    {
-        //        Summary = eventEntity.Title,
-        //        Description = eventEntity.Description,
-        //        Location = eventEntity.Location,
-        //        Start = eventEntity.StartTime,
-        //        End = eventEntity.EndTime
-        //    };
 
-        //    await GoogleCalendarHelper.CreateGoogleCalendar(googleCalendarEvent);
-        //}
+            GoogleCalendar newEvent = new GoogleCalendar()
+            {
+                Summary = eventEntity.Title,
+                Location = eventEntity.Location,
+                Description = eventEntity.Description,
+                Start = eventEntity.StartTime,
+                End = eventEntity.EndTime
+            };
+
+            await GoogleCalendarHelper.CreateGoogleCalendar(newEvent);
+        }
 
 
 
         public async Task<EventDTO> CreateEventAsync(EventDTO eventDto)
         {
-            var newEvent = new Event
+            var newEvent = new EventEntity
             {
                 Id = Guid.NewGuid(),
                 Title = eventDto.Title,
@@ -57,12 +61,12 @@ namespace EventScheduler.Domain.Services
             return eventDto;
         }
 
-        public async Task<List<Event>> GetEventsByCompanyAsync(Guid companyId)
+        public async Task<List<EventEntity>> GetEventsByCompanyAsync(Guid companyId)
         {
             return await _eventRepository.GetEventsByCompanyAsync(companyId);
         }
 
-        public async Task<List<Event>> GetEventsByStudentAsync(Guid studentId)
+        public async Task<List<EventEntity>> GetEventsByStudentAsync(Guid studentId)
         {
             return await _eventRepository.GetEventsByStudentAsync(studentId);
         }
@@ -77,7 +81,7 @@ namespace EventScheduler.Domain.Services
             var eventEntity = await _eventRepository.GetEventByIdAsync(id);
             if (eventEntity == null)
             {
-                throw new KeyNotFoundException("Event not found.");
+                throw new KeyNotFoundException("EventEntity not found.");
             }
 
             return new EventDTO

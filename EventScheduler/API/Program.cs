@@ -1,3 +1,4 @@
+using EventScheduler.API.Google;
 using EventScheduler.Data;
 using EventScheduler.Data.Repositories;
 using EventScheduler.Domain.Entities;
@@ -87,7 +88,6 @@ using (var scope = app.Services.CreateScope())
     var accessToken = await DatabaseInitializer.Initialize(services);
     Console.WriteLine($"Access Token for Dean: {accessToken}");
 }
-
 
 app.UseHttpsRedirection();
 
