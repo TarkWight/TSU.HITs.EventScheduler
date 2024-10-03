@@ -7,7 +7,7 @@ namespace EventScheduler.Domain.Interfaces
         Task<List<Manager>> GetAllManagersAsync();
         Task UpdateManagerStatusAsync(Guid id, ManagerStatus status);
         Task<List<Manager>> GetPendingManagersAsync();
-        //Task<Event> CreateEventAsync(Guid companyId, Event newEvent, Guid managerId);
+        Task<EventEntity> CreateEventAsync(Guid companyId, EventEntity newEvent, Guid managerId);
         Task<Manager> GetManagerByIdAsync(Guid managerId);
     }
 }

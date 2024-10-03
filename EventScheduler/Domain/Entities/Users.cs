@@ -15,14 +15,14 @@ namespace EventScheduler.Domain.Entities
 
     public class Student : User
     {
-        public List<Event>? RegisteredEvents { get; set; }
+        public List<EventEntity>? RegisteredEvents { get; set; }
     }
 
     public class Manager : User
     {
         public ManagerStatus Status { get; set; }
         public Guid CompanyId { get; set; }
-        public List<Event>? ManagedEvents { get; set; }
+        public List<EventEntity>? ManagedEvents { get; set; }
     }
 
     public class Dean : User

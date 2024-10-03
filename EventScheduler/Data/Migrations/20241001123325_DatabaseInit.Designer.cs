@@ -73,7 +73,7 @@ namespace EventScheduler.Data.Migrations
                     b.ToTable("Deans");
                 });
 
-            modelBuilder.Entity("EventScheduler.Domain.Entities.Event", b =>
+            modelBuilder.Entity("EventScheduler.Domain.Entities.EventEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -202,7 +202,7 @@ namespace EventScheduler.Data.Migrations
                     b.ToTable("EventStudent");
                 });
 
-            modelBuilder.Entity("EventScheduler.Domain.Entities.Event", b =>
+            modelBuilder.Entity("EventScheduler.Domain.Entities.EventEntity", b =>
                 {
                     b.HasOne("EventScheduler.Domain.Entities.Company", null)
                         .WithMany("Events")
@@ -228,7 +228,7 @@ namespace EventScheduler.Data.Migrations
 
             modelBuilder.Entity("EventStudent", b =>
                 {
-                    b.HasOne("EventScheduler.Domain.Entities.Event", null)
+                    b.HasOne("EventScheduler.Domain.Entities.EventEntity", null)
                         .WithMany()
                         .HasForeignKey("RegisteredEventsId")
                         .OnDelete(DeleteBehavior.Cascade)

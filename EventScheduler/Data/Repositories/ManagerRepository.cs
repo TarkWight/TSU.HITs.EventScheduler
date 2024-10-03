@@ -11,7 +11,7 @@ namespace EventScheduler.Data.Repositories
         Task<Manager> GetManagerByIdAsync(Guid id);
         Task<TokenDTO> UpdateManagerStatusAsync(Guid id, ManagerStatus status);
         Task<List<Manager>> GetPendingManagersAsync();
-        Task<Event> CreateEventAsync(Guid companyId, Event newEvent);
+        Task<EventEntity> CreateEventAsync(Guid companyId, EventEntity newEvent);
     }
 
     public class ManagerRepository : IManagerRepository
@@ -72,7 +72,7 @@ namespace EventScheduler.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Event> CreateEventAsync(Guid companyId, Event newEvent)
+        public async Task<EventEntity> CreateEventAsync(Guid companyId, EventEntity newEvent)
         {
             newEvent.CompanyId = companyId;
             _context.Events.Add(newEvent);

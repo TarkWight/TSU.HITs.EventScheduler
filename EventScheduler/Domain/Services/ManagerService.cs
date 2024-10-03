@@ -7,12 +7,12 @@ namespace EventScheduler.Domain.Services
     public class ManagerService : IManagerService
     {
         private readonly IManagerRepository _repository;
-        //private readonly IEventRepository _eventRepository;
+        private readonly IEventRepository _eventRepository;
 
-        public ManagerService(IManagerRepository repository/*, IEventRepository eventRepository*/)
+        public ManagerService(IManagerRepository repository, IEventRepository eventRepository)
         {
             _repository = repository;
-            //_eventRepository = eventRepository;
+            _eventRepository = eventRepository;
         }
 
         public async Task<List<Manager>> GetAllManagersAsync()
@@ -30,18 +30,18 @@ namespace EventScheduler.Domain.Services
             return await _repository.GetPendingManagersAsync();
         }
 
-        //public async Task<Event> CreateEventAsync(Guid companyId, Event newEvent, Guid managerId)
-        //{
-        //    var manager = await _repository.GetManagerByIdAsync(managerId);
+        public async Task<EventEntity> CreateEventAsync(Guid companyId, EventEntity newEvent, Guid managerId)
+        {
+            var manager = await _repository.GetManagerByIdAsync(managerId);
 
-        //    if (manager == null || manager.Status != ManagerStatus.Confirmed || manager.CompanyId != companyId)
-        //    {
-        //        throw new UnauthorizedAccessException("You are not authorized to create an event for this company.");
-        //    }
+            if (manager == null || manager.Status != ManagerStatus.Confirmed || manager.CompanyId != companyId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to create an event for this company.");
+            }
 
-        //    newEvent.CompanyId = companyId;
-        //    return await _eventRepository.CreateEventAsync(newEvent);
-        //}
+            newEvent.CompanyId = companyId;
+            return await _eventRepository.CreateEventAsync(newEvent);
+        }
 
         public async Task<Manager> GetManagerByIdAsync(Guid managerId)
         {

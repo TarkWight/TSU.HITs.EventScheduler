@@ -1,8 +1,11 @@
-﻿using EventScheduler.Domain.Entities;
+﻿using Azure.Core;
+using EventScheduler.API.Google;
+using EventScheduler.Domain.Entities;
 using EventScheduler.Domain.Interfaces;
 using EventScheduler.Presenters.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace EventScheduler.API.Controllers
@@ -37,10 +40,10 @@ namespace EventScheduler.API.Controllers
 
         // GET: api/events/companies/{companyId}
         [HttpGet("companies/{companyId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Event>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EventEntity>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Get events by company", Description = "Retrieves a list of events for a specific company by company ID.")]
-        public async Task<ActionResult<List<Event>>> GetEventsByCompany(Guid companyId)
+        public async Task<ActionResult<List<EventEntity>>> GetEventsByCompany(Guid companyId)
         {
             var events = await _eventService.GetEventsByCompanyAsync(companyId);
             return Ok(events);
@@ -48,18 +51,18 @@ namespace EventScheduler.API.Controllers
 
         // GET: api/events/students/{studentId}
         [HttpGet("students/{studentId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Event>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EventEntity>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize]
         [SwaggerOperation(Summary = "Get events for a student", Description = "Retrieves a list of events for a specific student by student ID.")]
-        public async Task<ActionResult<List<Event>>> GetEventsByStudent(Guid studentId)
+        public async Task<ActionResult<List<EventEntity>>> GetEventsByStudent(Guid studentId)
         {
             var events = await _eventService.GetEventsByStudentAsync(studentId);
             return Ok(events);
         }
 
         // GET: api/events/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{eventId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Get event by ID", Description = "Retrieves event details by event ID.")]
@@ -70,7 +73,7 @@ namespace EventScheduler.API.Controllers
         }
 
         // GET: api/events/{id}/students
-        [HttpGet("{id}/students")]
+        [HttpGet("{eventId}/students")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Student>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize]
@@ -81,24 +84,17 @@ namespace EventScheduler.API.Controllers
             return Ok(students);
         }
 
-        //[HttpPost("{id}/register")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[Authorize]
-        //[SwaggerOperation(Summary = "Register student for event", Description = "Registers a student for a specific event by event ID.")]
-        //public async Task<IActionResult> RegisterStudent(Guid id, [FromBody] StudentRegistrationForEventDTO studentDto)
-        //{
-        //    var student = new Student
-        //    {
-        //        Id = studentDto.Id,
-        //        Name = studentDto.Name,
-        //        Email = studentDto.Email
-        //    };
-
-        //    await _eventService.RegisterStudentToEventAsync(id, student);
-
-        //    return Ok();
-        //}
+        [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize]
+        [SwaggerOperation(Summary = "Register student for event", Description = "Registers a student for a specific event by event ID.")]
+        public async Task<IActionResult> RegisterStudent(StudentEventRegisterDTO eventRegisterDTO)
+        {
+            await _eventService.RegisterStudentToEventAsync(eventRegisterDTO);
+            
+            return Ok();
+        }
 
     }
 

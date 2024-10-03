@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using EventScheduler.Domain.Entities;
 using EventScheduler.Domain.Interfaces;
+using EventScheduler.Presenters.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -60,72 +61,72 @@ public class ManagersController : ControllerBase
         return Ok(pendingManagers);
     }
 
-    //[HttpPost("company/{companyId}/events")]
-    //[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Event))]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status404NotFound)]
-    //[Authorize(Roles = "Manager")]
-    //[SwaggerOperation(Summary = "Create a new event for a specific company", Description = "Creates a new event under the specified company.")]
-    //public async Task<IActionResult> CreateEvent(Guid companyId, [FromBody] EventDTO eventDto)
-    //{
-    //    if (eventDto == null)
-    //    {
-    //        return BadRequest("Event data is required.");
-    //    }
+    [HttpPost("company/{companyId}/events")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EventEntity))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = "Manager")]
+    [SwaggerOperation(Summary = "Create a new event for a specific company", Description = "Creates a new event under the specified company.")]
+    public async Task<IActionResult> CreateEvent(Guid companyId, [FromBody] EventDTO eventDto)
+    {
+        if (eventDto == null)
+        {
+            return BadRequest("EventEntity data is required.");
+        }
 
-    //    var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-    //    Console.WriteLine($"Manager Access Token: {token}");
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        Console.WriteLine($"Manager Access Token: {token}");
 
-    //    var managerIdString = User.Claims
-    //        .Where(c => c.Type == ClaimTypes.NameIdentifier)
-    //        .Select(c => c.Value)
-    //        .LastOrDefault();
+        var managerIdString = User.Claims
+            .Where(c => c.Type == ClaimTypes.NameIdentifier)
+            .Select(c => c.Value)
+            .LastOrDefault();
 
-    //    foreach (var claim in User.Claims)
-    //    {
-    //        Console.WriteLine($"Claim Type: {claim.Type}, Value: {claim.Value}");
-    //    }
+        foreach (var claim in User.Claims)
+        {
+            Console.WriteLine($"Claim Type: {claim.Type}, Value: {claim.Value}");
+        }
 
 
-    //    Console.WriteLine($"Manager ID from token: {managerIdString}");
+        Console.WriteLine($"Manager ID from token: {managerIdString}");
 
-    //    if (string.IsNullOrEmpty(managerIdString) || !Guid.TryParse(managerIdString, out var managerId))
-    //    {
-    //        Console.WriteLine("Invalid manager identifier. It may be null or empty or not a valid GUID.");
-    //        return BadRequest("Invalid manager identifier.");
-    //    }
+        if (string.IsNullOrEmpty(managerIdString) || !Guid.TryParse(managerIdString, out var managerId))
+        {
+            Console.WriteLine("Invalid manager identifier. It may be null or empty or not a valid GUID.");
+            return BadRequest("Invalid manager identifier.");
+        }
 
-    //    var manager = await _ManagerService.GetManagerByIdAsync(managerId);
-    //    if (manager == null)
-    //    {
-    //        return NotFound("Manager not found.");
-    //    }
+        var manager = await _ManagerService.GetManagerByIdAsync(managerId);
+        if (manager == null)
+        {
+            return NotFound("Manager not found.");
+        }
 
-    //    if (manager.Status != ManagerStatus.Confirmed)
-    //    {
-    //        return Unauthorized("You are not authorized to create an event for this company.");
-    //    }
+        if (manager.Status != ManagerStatus.Confirmed)
+        {
+            return Unauthorized("You are not authorized to create an event for this company.");
+        }
 
-    //    if (manager.CompanyId != companyId)
-    //    {
-    //        return Unauthorized("You are not authorized to create an event for this company.");
-    //    }
+        if (manager.CompanyId != companyId)
+        {
+            return Unauthorized("You are not authorized to create an event for this company.");
+        }
 
-    //    var newEvent = new Event
-    //    {
-    //        Id = Guid.NewGuid(),
-    //        Title = eventDto.Title,
-    //        Description = eventDto.ShortDescription,
-    //        StartTime = eventDto.StartDateTime,
-    //        EndTime = eventDto.EndDateTime,
-    //        Location = eventDto.Location,
-    //        RegistrationDeadline = eventDto.RegistrationDeadline,
-    //        CompanyId = companyId
-    //    };
+        var newEvent = new EventEntity
+        {
+            Id = Guid.NewGuid(),
+            Title = eventDto.Title,
+            Description = eventDto.ShortDescription,
+            StartTime = eventDto.StartDateTime,
+            EndTime = eventDto.EndDateTime,
+            Location = eventDto.Location,
+            RegistrationDeadline = eventDto.RegistrationDeadline,
+            CompanyId = companyId
+        };
 
-    //    var createdEvent = await _ManagerService.CreateEventAsync(companyId, newEvent, managerId);
-    //    return CreatedAtAction(nameof(CreateEvent), new { id = createdEvent.Id }, createdEvent);
-    //}
+        var createdEvent = await _ManagerService.CreateEventAsync(companyId, newEvent, managerId);
+        return CreatedAtAction(nameof(CreateEvent), new { id = createdEvent.Id }, createdEvent);
+    }
 
 
 

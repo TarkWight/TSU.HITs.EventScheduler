@@ -2,7 +2,7 @@
 
 namespace EventScheduler.Domain.Entities
 {
-    public class Event
+    public class EventEntity
     {
         public Guid Id { get; set; }
         public Guid CompanyId { get; set; }
