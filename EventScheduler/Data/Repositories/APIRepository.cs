@@ -5,9 +5,10 @@ namespace EventScheduler.Data.Repositories
 {
     public interface IAPIRepository
     {
-        Task<User?> GetUserByIdAndRoleAsync(Guid userId);
+        Task<User?> GetUserByIdAsync(Guid userId);
+
     }
-    public class APIRepository
+    public class APIRepository : IAPIRepository
     {
         private readonly ApplicationDbContext _context;
 

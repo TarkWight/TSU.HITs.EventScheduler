@@ -24,6 +24,8 @@ builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IAPIRepository, APIRepository>();
+
 //#
 
 //#### JWT

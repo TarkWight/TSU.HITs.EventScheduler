@@ -11,6 +11,8 @@ namespace EventScheduler.Data.Repositories
         Task<Company> AddCompanyAsync(Company company);
         Task<Company> UpdateCompanyAsync(Company company);
         Task DeleteCompanyAsync(Guid id);
+        Task<Company> GetByIdAsync(Guid companyId);
+
     }
 
     public class CompanyRepository : ICompanyRepository
@@ -21,6 +23,13 @@ namespace EventScheduler.Data.Repositories
         {
             _dbContext = dbContext;
         }
+
+        public async Task<Company> GetByIdAsync(Guid companyId)
+        {
+            return await _dbContext.Companies
+                .FirstOrDefaultAsync(c => c.Id == companyId);
+        }
+
 
         public async Task<List<Company>> GetCompaniesAsync(int page, int size)
         {
