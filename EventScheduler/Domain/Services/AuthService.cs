@@ -10,11 +10,11 @@ namespace EventScheduler.Domain.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly AuthRepository _authRepository;
+        private readonly IAuthRepository _authRepository;
         private readonly ITokenService _tokenService;
         private readonly IPasswordHasher<User> _passwordHasher;
 
-        public AuthService(AuthRepository authRepository, ITokenService tokenService, IPasswordHasher<User> passwordHasher)
+        public AuthService(IAuthRepository authRepository, ITokenService tokenService, IPasswordHasher<User> passwordHasher)
         {
             _authRepository = authRepository;
             _tokenService = tokenService;
